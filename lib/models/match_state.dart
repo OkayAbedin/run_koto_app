@@ -17,6 +17,8 @@ class BallHistory {
     this.isWide = false,
     this.isNoBall = false,
   });
+
+  bool get isLegalDelivery => !isWide && !isNoBall;
 }
 
 class MatchState extends ChangeNotifier {
@@ -35,6 +37,8 @@ class MatchState extends ChangeNotifier {
   List<int> secondInningsScore = [];
   List<BallHistory> firstInningsBallHistory = [];
   List<BallHistory> secondInningsBallHistory = [];
+  int firstInningsDeliveries = 0;
+  int secondInningsDeliveries = 0;
   bool isMatchComplete = false;
 
   // Toss related properties
@@ -113,9 +117,11 @@ class MatchState extends ChangeNotifier {
     if (currentInnings == 1) {
       firstInningsScore.add(runs);
       firstInningsBallHistory.add(ballHistory);
+      firstInningsDeliveries++; // Increment legal deliveries
     } else {
       secondInningsScore.add(runs);
       secondInningsBallHistory.add(ballHistory);
+      secondInningsDeliveries++; // Increment legal deliveries
       if (secondInningsScore.reduce((a, b) => a + b) >
           firstInningsScore.reduce((a, b) => a + b)) {
         isMatchComplete = true;
@@ -138,28 +144,36 @@ class MatchState extends ChangeNotifier {
   }
 
   void addWicket() {
+    if (isMatchComplete) return;
+
     if (wickets < playersPerTeam - 1) {
       wickets++;
+      currentBall++;
+
       final ballHistory = BallHistory(
         runs: 0,
         isWicket: true,
         over: currentOver,
-        ball: currentBall + 1,
+        ball: currentBall,
       );
 
       if (currentInnings == 1) {
+        firstInningsScore.add(0); // Add 0 runs for a wicket
         firstInningsBallHistory.add(ballHistory);
+        firstInningsDeliveries++; // Increment legal deliveries count
       } else {
+        secondInningsScore.add(0); // Add 0 runs for a wicket
         secondInningsBallHistory.add(ballHistory);
+        secondInningsDeliveries++; // Increment legal deliveries count
       }
 
-      currentBall++;
       if (currentBall == 6) {
         currentBall = 0;
         currentOver++;
       }
 
-      if (wickets == playersPerTeam - 1) {
+      if (wickets == playersPerTeam - 1 ||
+          (currentOver == totalOvers && currentBall == 6)) {
         if (currentInnings == 1) {
           currentInnings = 2;
           startNewInnings();
@@ -300,5 +314,100 @@ class MatchState extends ChangeNotifier {
           ? (secondInningsTotal > firstInningsTotal ? team2Name : team1Name)
           : null,
     };
+  }
+
+  void undoLastAction() {
+    if (currentInnings == 1) {
+      if (firstInningsBallHistory.isNotEmpty) {
+        final lastBall = firstInningsBallHistory.removeLast();
+
+        // Remove runs
+        runs -= lastBall.runs;
+
+        // Remove from innings score
+        if (firstInningsScore.isNotEmpty) {
+          firstInningsScore.removeLast();
+        }
+
+        // Adjust wickets if needed
+        if (lastBall.isWicket) {
+          wickets--;
+        }
+
+        // Adjust extras if needed
+        if (lastBall.isWide || lastBall.isNoBall) {
+          extras--;
+        }
+
+        // Adjust ball count for legal deliveries
+        if (lastBall.isLegalDelivery) {
+          firstInningsDeliveries--;
+          // Adjust current ball/over
+          if (currentBall > 0) {
+            currentBall--;
+          } else if (currentOver > 0) {
+            currentOver--;
+            currentBall =
+                5; // Set to 5 because we're going back to the last ball of the previous over
+          }
+        }
+
+        notifyListeners();
+      }
+    } else {
+      if (secondInningsBallHistory.isNotEmpty) {
+        final lastBall = secondInningsBallHistory.removeLast();
+
+        // Remove runs
+        runs -= lastBall.runs;
+
+        // Remove from innings score
+        if (secondInningsScore.isNotEmpty) {
+          secondInningsScore.removeLast();
+        }
+
+        // Adjust wickets if needed
+        if (lastBall.isWicket) {
+          wickets--;
+        }
+
+        // Adjust extras if needed
+        if (lastBall.isWide || lastBall.isNoBall) {
+          extras--;
+        }
+
+        // Adjust ball count for legal deliveries
+        if (lastBall.isLegalDelivery) {
+          secondInningsDeliveries--;
+          // Adjust current ball/over
+          if (currentBall > 0) {
+            currentBall--;
+          } else if (currentOver > 0) {
+            currentOver--;
+            currentBall =
+                5; // Set to 5 because we're going back to the last ball of the previous over
+          }
+        }
+
+        // Check if match was complete but now isn't
+        if (isMatchComplete) {
+          int secondInningsTotal = secondInningsScore.isEmpty
+              ? 0
+              : secondInningsScore.reduce((a, b) => a + b);
+          int firstInningsTotal = firstInningsScore.isEmpty
+              ? 0
+              : firstInningsScore.reduce((a, b) => a + b);
+
+          if (secondInningsTotal <= firstInningsTotal &&
+              wickets < playersPerTeam - 1 &&
+              (currentOver < totalOvers ||
+                  (currentOver == totalOvers && currentBall < 6))) {
+            isMatchComplete = false;
+          }
+        }
+
+        notifyListeners();
+      }
+    }
   }
 }

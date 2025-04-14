@@ -202,6 +202,75 @@ class ScoringScreen extends StatelessWidget {
                               letterSpacing: 1.2,
                             ),
                           ),
+                          Spacer(),
+                          IconButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (dialogContext) => AlertDialog(
+                                  backgroundColor: Color(0xFF212121),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  title: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.undo,
+                                        color: Colors.orange,
+                                        size: 24,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Undo Last Action',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  content: Text(
+                                    'Are you sure you want to undo the last scoring action?',
+                                    style: TextStyle(
+                                      color: Colors.grey[300],
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(dialogContext),
+                                      child: Text(
+                                        'CANCEL',
+                                        style:
+                                            TextStyle(color: Colors.grey[400]),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        matchState.undoLastAction();
+                                        Navigator.pop(dialogContext);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.orange,
+                                      ),
+                                      child: Text('UNDO'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            icon: Icon(
+                              Icons.undo,
+                              color: Colors.orange,
+                            ),
+                            tooltip: 'Undo Last Action',
+                            style: IconButton.styleFrom(
+                              backgroundColor: Colors.orange.withOpacity(0.15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -600,40 +669,91 @@ class ScoringScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
+        return Dialog(
           backgroundColor: Color(0xFF212121),
-          title: Text(
-            'Wide Ball',
-            style: TextStyle(color: Colors.white),
-          ),
-          content: Text(
-            'Additional runs from the wide?',
-            style: TextStyle(color: Colors.grey[300]),
-          ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
           ),
-          actions: [
-            _dialogButton(
-              context,
-              'Just Wide (+1)',
-              () {
-                matchState.addWide();
-                Navigator.of(context).pop();
-              },
-              theme,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.orangeAccent.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.sports_cricket,
+                        color: Colors.orangeAccent,
+                        size: 24,
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Text(
+                      'Wide Ball',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Additional runs from the wide?',
+                  style: TextStyle(color: Colors.grey[300]),
+                ),
+                SizedBox(height: 20),
+
+                // Grid of options
+                GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 1.5,
+                  children: [
+                    _buildOptionButton(
+                      context,
+                      '0',
+                      'Just Wide',
+                      Colors.orangeAccent,
+                      () {
+                        matchState.addWide();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    for (int i = 1; i <= 4; i++)
+                      _buildOptionButton(
+                        context,
+                        '+$i',
+                        'Wide + $i',
+                        Colors.orangeAccent,
+                        () {
+                          matchState.addWideWithRuns(i);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.grey[400],
+                  ),
+                  child: Text('CANCEL'),
+                ),
+              ],
             ),
-            for (int i = 1; i <= 4; i++)
-              _dialogButton(
-                context,
-                'Wide + $i runs',
-                () {
-                  matchState.addWideWithRuns(i);
-                  Navigator.of(context).pop();
-                },
-                theme,
-              ),
-          ],
+          ),
         );
       },
     );
@@ -644,40 +764,91 @@ class ScoringScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
+        return Dialog(
           backgroundColor: Color(0xFF212121),
-          title: Text(
-            'No Ball',
-            style: TextStyle(color: Colors.white),
-          ),
-          content: Text(
-            'Additional runs from the no ball?',
-            style: TextStyle(color: Colors.grey[300]),
-          ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
           ),
-          actions: [
-            _dialogButton(
-              context,
-              'Just No Ball (+1)',
-              () {
-                matchState.addNoBall();
-                Navigator.of(context).pop();
-              },
-              theme,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.purpleAccent.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.sports_cricket,
+                        color: Colors.purpleAccent,
+                        size: 24,
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Text(
+                      'No Ball',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Additional runs from the no ball?',
+                  style: TextStyle(color: Colors.grey[300]),
+                ),
+                SizedBox(height: 20),
+
+                // Grid of options
+                GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 1.5,
+                  children: [
+                    _buildOptionButton(
+                      context,
+                      '0',
+                      'Just No Ball',
+                      Colors.purpleAccent,
+                      () {
+                        matchState.addNoBall();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    for (int i = 1; i <= 6; i++)
+                      _buildOptionButton(
+                        context,
+                        '+$i',
+                        'No Ball + $i',
+                        Colors.purpleAccent,
+                        () {
+                          matchState.addNoBall(i);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.grey[400],
+                  ),
+                  child: Text('CANCEL'),
+                ),
+              ],
             ),
-            for (int i = 1; i <= 6; i++)
-              _dialogButton(
-                context,
-                'No Ball + $i runs',
-                () {
-                  matchState.addNoBall(i);
-                  Navigator.of(context).pop();
-                },
-                theme,
-              ),
-          ],
+          ),
         );
       },
     );
@@ -707,5 +878,39 @@ class ScoringScreen extends StatelessWidget {
     if (ball.isNoBall) return Colors.purpleAccent;
     if (ball.runs == 4 || ball.runs == 6) return theme.colorScheme.primary;
     return Colors.white;
+  }
+
+  Widget _buildOptionButton(BuildContext context, String label, String subLabel,
+      Color color, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.all(8),
+        backgroundColor: color.withOpacity(0.2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            subLabel,
+            style: TextStyle(
+              color: Colors.grey[300],
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
