@@ -19,51 +19,122 @@ class ScoringScreen extends StatelessWidget {
             ),
             centerTitle: true,
           ),
-          body: matchState.isMatchComplete
-              ? _buildMatchSummary(context, matchState)
-              : _buildScoringUI(context, matchState),
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF121212),
+                  Color(0xFF181818),
+                  Color(0xFF121212),
+                ],
+              ),
+            ),
+            child: matchState.isMatchComplete
+                ? _buildMatchSummary(context, matchState)
+                : _buildScoringUI(context, matchState),
+          ),
         );
       },
     );
   }
 
   Widget _buildScoringUI(BuildContext context, MatchState matchState) {
+    final theme = Theme.of(context);
+
     return Column(
       children: [
         Card(
           margin: const EdgeInsets.all(16),
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Score: ${matchState.getCurrentScore()}',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'SCORE',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        Text(
+                          '${matchState.getCurrentScore()}',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      'Overs: ${matchState.getOvers()}',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          'OVERS',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        Text(
+                          '${matchState.getOvers()}',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
                 if (matchState.currentInnings == 2)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      'Target: ${matchState.firstInningsScore.reduce((a, b) => a + b) + 1}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.blue,
+                  Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: theme.colorScheme.primary.withOpacity(0.5),
+                        width: 1,
                       ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.flag,
+                          color: theme.colorScheme.primary,
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'TARGET: ${matchState.firstInningsScore.reduce((a, b) => a + b) + 1}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
               ],
@@ -73,71 +144,101 @@ class ScoringScreen extends StatelessWidget {
         Expanded(
           child: Column(
             children: [
-              Expanded(
-                child: _buildBallHistory(matchState),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.history,
+                      color: Colors.grey[400],
+                      size: 18,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'BALL HISTORY',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[400],
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 3,
+              Expanded(
+                child: _buildBallHistory(matchState, theme),
+              ),
+              Container(
                 padding: const EdgeInsets.all(16),
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                children: [
-                  for (int i = 0; i <= 6; i++)
-                    ElevatedButton(
-                      onPressed: () => matchState.addBallOutcome(i),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                decoration: BoxDecoration(
+                  color: Color(0xFF212121),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.sports_cricket,
+                            color: Colors.grey[400],
+                            size: 18,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'SCORING OPTIONS',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[400],
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisCount: 4,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 1.3,
+                      children: [
+                        for (int i = 0; i <= 6; i++)
+                          _buildRunButton(context, i, matchState, theme),
+                        _buildSpecialButton(
+                          context,
+                          'W',
+                          Colors.redAccent,
+                          () => matchState.addWicket(),
+                          theme,
                         ),
-                      ),
-                      child: Text(
-                        '$i',
-                        style: const TextStyle(fontSize: 24),
-                      ),
+                        _buildSpecialButton(
+                          context,
+                          'Wide',
+                          Colors.orangeAccent,
+                          () => _showWideDialog(context, matchState, theme),
+                          theme,
+                        ),
+                        _buildSpecialButton(
+                          context,
+                          'No Ball',
+                          Colors.purpleAccent,
+                          () => _showNoBallDialog(context, matchState, theme),
+                          theme,
+                          fontSize: 14,
+                        ),
+                      ],
                     ),
-                  ElevatedButton(
-                    onPressed: () => matchState.addWicket(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'W',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                  ),
-                  // Add new buttons for Wide and No Ball
-                  ElevatedButton(
-                    onPressed: () => _showWideDialog(context, matchState),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'Wide',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => _showNoBallDialog(context, matchState),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.purple,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'No Ball',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -146,54 +247,140 @@ class ScoringScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBallHistory(MatchState matchState) {
+  Widget _buildRunButton(
+      BuildContext context, int runs, MatchState matchState, ThemeData theme) {
+    return ElevatedButton(
+      onPressed: () => matchState.addBallOutcome(runs),
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.zero,
+        elevation: 0,
+        backgroundColor: runs == 0
+            ? Color(0xFF333333)
+            : runs == 4 || runs == 6
+                ? theme.colorScheme.primary
+                : Color(0xFF2E2E2E),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      child: Text(
+        '$runs',
+        style: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          color: runs == 4 || runs == 6 ? Colors.white : Colors.grey[300],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSpecialButton(BuildContext context, String label, Color color,
+      VoidCallback onPressed, ThemeData theme,
+      {double fontSize = 18}) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.zero,
+        elevation: 0,
+        backgroundColor: color.withOpacity(0.2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: color.withOpacity(0.5), width: 1),
+        ),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBallHistory(MatchState matchState, ThemeData theme) {
     final ballHistory = matchState.getCurrentInningsBallHistory();
     if (ballHistory.isEmpty) {
-      return const Center(
-        child: Text(
-          'No balls bowled yet',
-          style: TextStyle(fontSize: 16),
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.sports_cricket_outlined,
+              color: Colors.grey[600],
+              size: 48,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'No balls bowled yet',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[500],
+              ),
+            ),
+          ],
         ),
       );
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: ballHistory.length,
       itemBuilder: (context, index) {
-        final ball = ballHistory[index];
         final reversedIndex = ballHistory.length - 1 - index;
         final currentBall = ballHistory[reversedIndex];
 
-        return Card(
-          margin: const EdgeInsets.only(bottom: 8),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: Color(0xFF212121),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: _getBallColor(currentBall, theme).withOpacity(0.3),
+              width: 1,
+            ),
+          ),
           child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: currentBall.isWicket ? Colors.red : Colors.blue,
+            leading: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: _getBallColor(currentBall, theme).withOpacity(0.15),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: _getBallColor(currentBall, theme),
+                  width: 2,
+                ),
+              ),
+              alignment: Alignment.center,
               child: Text(
                 currentBall.isWicket ? 'W' : '${currentBall.runs}',
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: _getBallColor(currentBall, theme),
                   fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
             ),
             title: Text(
               'Over ${currentBall.over}.${currentBall.ball}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
             subtitle: Text(
               _getBallTypeText(currentBall),
               style: TextStyle(
-                color: _getBallTypeColor(currentBall),
+                color: Colors.grey[400],
+                fontSize: 12,
               ),
             ),
             trailing: Text(
               currentBall.isWicket ? 'WICKET!' : '+${currentBall.runs} runs',
               style: TextStyle(
-                color: currentBall.isWicket ? Colors.red : Colors.green,
+                color: _getBallColor(currentBall, theme),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -205,39 +392,73 @@ class ScoringScreen extends StatelessWidget {
   }
 
   Widget _buildMatchSummary(BuildContext context, MatchState matchState) {
+    final theme = Theme.of(context);
     final summary = matchState.getMatchSummary();
+
     return Center(
       child: Card(
-        margin: const EdgeInsets.all(16),
+        margin: const EdgeInsets.all(20),
+        elevation: 8,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Match Summary',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+              Icon(
+                Icons.emoji_events,
+                color: theme.colorScheme.primary,
+                size: 56,
               ),
-              const SizedBox(height: 24),
-              _buildTeamScore(
-                  summary['team1']['name'], summary['team1']['score']),
-              const SizedBox(height: 16),
-              _buildTeamScore(
-                  summary['team2']['name'], summary['team2']['score']),
               const SizedBox(height: 24),
               Text(
-                'Winner: ${summary['winner']}',
-                style: const TextStyle(
-                  fontSize: 20,
+                'MATCH COMPLETE',
+                style: TextStyle(
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.green,
+                  color: theme.colorScheme.primary,
+                  letterSpacing: 2,
                 ),
               ),
-              const SizedBox(height: 24),
-              ElevatedButton(
+              const SizedBox(height: 8),
+              Text(
+                'Match Summary',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 32),
+              _buildTeamScore(
+                  summary['team1']['name'], summary['team1']['score'], theme),
+              Divider(color: Colors.grey[800], height: 32),
+              _buildTeamScore(
+                  summary['team2']['name'], summary['team2']['score'], theme),
+              const SizedBox(height: 32),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: theme.colorScheme.primary,
+                    width: 2,
+                  ),
+                ),
+                child: Text(
+                  'WINNER: ${summary['winner']}',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
@@ -245,7 +466,11 @@ class ScoringScreen extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text('Start New Match'),
+                icon: Icon(Icons.add_circle),
+                label: Text('START NEW MATCH'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                ),
               ),
             ],
           ),
@@ -254,50 +479,67 @@ class ScoringScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTeamScore(String teamName, int score) {
+  Widget _buildTeamScore(String teamName, int score, ThemeData theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           teamName,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
+            color: Colors.white,
           ),
         ),
         Text(
           score.toString(),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
       ],
     );
   }
 
-  void _showWideDialog(BuildContext context, MatchState matchState) {
+  void _showWideDialog(
+      BuildContext context, MatchState matchState, ThemeData theme) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Wide Ball'),
-          content: const Text('Additional runs from the wide?'),
+          backgroundColor: Color(0xFF212121),
+          title: Text(
+            'Wide Ball',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            'Additional runs from the wide?',
+            style: TextStyle(color: Colors.grey[300]),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           actions: [
-            TextButton(
-              onPressed: () {
+            _dialogButton(
+              context,
+              'Just Wide (+1)',
+              () {
                 matchState.addWide();
                 Navigator.of(context).pop();
               },
-              child: const Text('Just Wide (+1)'),
+              theme,
             ),
             for (int i = 1; i <= 4; i++)
-              TextButton(
-                onPressed: () {
+              _dialogButton(
+                context,
+                'Wide + $i runs',
+                () {
                   matchState.addWideWithRuns(i);
                   Navigator.of(context).pop();
                 },
-                child: Text('Wide + $i runs'),
+                theme,
               ),
           ],
         );
@@ -305,32 +547,59 @@ class ScoringScreen extends StatelessWidget {
     );
   }
 
-  void _showNoBallDialog(BuildContext context, MatchState matchState) {
+  void _showNoBallDialog(
+      BuildContext context, MatchState matchState, ThemeData theme) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('No Ball'),
-          content: const Text('Additional runs from the no ball?'),
+          backgroundColor: Color(0xFF212121),
+          title: Text(
+            'No Ball',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            'Additional runs from the no ball?',
+            style: TextStyle(color: Colors.grey[300]),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           actions: [
-            TextButton(
-              onPressed: () {
+            _dialogButton(
+              context,
+              'Just No Ball (+1)',
+              () {
                 matchState.addNoBall();
                 Navigator.of(context).pop();
               },
-              child: const Text('Just No Ball (+1)'),
+              theme,
             ),
             for (int i = 1; i <= 6; i++)
-              TextButton(
-                onPressed: () {
+              _dialogButton(
+                context,
+                'No Ball + $i runs',
+                () {
                   matchState.addNoBall(i);
                   Navigator.of(context).pop();
                 },
-                child: Text('No Ball + $i runs'),
+                theme,
               ),
           ],
         );
       },
+    );
+  }
+
+  Widget _dialogButton(BuildContext context, String text,
+      VoidCallback onPressed, ThemeData theme) {
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: theme.colorScheme.primary,
+        textStyle: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      child: Text(text),
     );
   }
 
@@ -340,9 +609,11 @@ class ScoringScreen extends StatelessWidget {
     return 'Legal Delivery';
   }
 
-  Color _getBallTypeColor(BallHistory ball) {
-    if (ball.isWide) return Colors.orange;
-    if (ball.isNoBall) return Colors.purple;
-    return Colors.black87;
+  Color _getBallColor(BallHistory ball, ThemeData theme) {
+    if (ball.isWicket) return Colors.redAccent;
+    if (ball.isWide) return Colors.orangeAccent;
+    if (ball.isNoBall) return Colors.purpleAccent;
+    if (ball.runs == 4 || ball.runs == 6) return theme.colorScheme.primary;
+    return Colors.white;
   }
 }

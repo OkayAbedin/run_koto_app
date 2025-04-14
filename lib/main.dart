@@ -17,12 +17,64 @@ class CricketTrackerApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Cricket Run Tracker',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
-          scaffoldBackgroundColor: Colors.grey[100],
+          useMaterial3: true,
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme.dark(
+            primary: Color(0xFF1DB954), // Spotify green
+            secondary: Color(0xFF1DB954),
+            surface: Color(0xFF121212), // Spotify dark background
+            background: Color(0xFF121212),
+            error: Colors.redAccent,
+          ),
+          scaffoldBackgroundColor: Color(0xFF121212),
           appBarTheme: AppBarTheme(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black87,
-            elevation: 1,
+            backgroundColor: Color(0xFF212121),
+            foregroundColor: Colors.white,
+            elevation: 0,
+            centerTitle: true,
+          ),
+          cardTheme: CardTheme(
+            color: Color(0xFF212121),
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF1DB954),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Color(0xFF333333),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide.none,
+            ),
+            labelStyle: TextStyle(color: Colors.grey[300]),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Color(0xFF1DB954), width: 2),
+            ),
+          ),
+          textTheme: TextTheme(
+            titleLarge: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Colors.white,
+            ),
+            bodyLarge: TextStyle(
+              color: Colors.grey[300],
+            ),
+            bodyMedium: TextStyle(
+              color: Colors.grey[300],
+            ),
           ),
         ),
         home: const MatchSetupScreen(),
