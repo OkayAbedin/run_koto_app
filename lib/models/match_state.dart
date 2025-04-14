@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BallHistory {
   final int runs;
@@ -22,7 +23,8 @@ class MatchState extends ChangeNotifier {
   String team1Name = '';
   String team2Name = '';
   int currentInnings = 1;
-  int totalOvers = 20;
+  int _defaultOvers = 20; // Default value
+  int totalOvers = 20; // This should be initialized with _defaultOvers
   int playersPerTeam = 11;
   int currentOver = 0;
   int currentBall = 0;
@@ -38,6 +40,36 @@ class MatchState extends ChangeNotifier {
   // Toss related properties
   String? tossWinner;
   String? battingFirst;
+
+  int get defaultOvers => _defaultOvers;
+
+  // Constructor to initialize totalOvers with _defaultOvers
+  MatchState() {
+    totalOvers = _defaultOvers;
+    _loadSettings(); // Load saved settings if available
+  }
+
+  void setDefaultOvers(int overs) {
+    _defaultOvers = overs;
+    totalOvers = overs; // Update totalOvers to match the new default
+    notifyListeners();
+    // If you're using shared preferences or another persistence method:
+    _saveSettings();
+  }
+
+  // Add a method to save settings to persistent storage
+  Future<void> _saveSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('defaultOvers', _defaultOvers);
+  }
+
+  // Add a method to load settings in your constructor or init method
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    _defaultOvers = prefs.getInt('defaultOvers') ?? 20;
+    totalOvers = _defaultOvers; // Ensure totalOvers matches loaded value
+    notifyListeners();
+  }
 
   void setTossResult(String winner, String battingTeam) {
     tossWinner = winner;

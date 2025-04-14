@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/match_state.dart';
+import '../widgets/app_drawer.dart';
 import 'match_setup_screen.dart';
 
 class ScoringScreen extends StatelessWidget {
@@ -19,6 +20,7 @@ class ScoringScreen extends StatelessWidget {
             ),
             centerTitle: true,
           ),
+          drawer: const AppDrawer(),
           body: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -203,37 +205,122 @@ class ScoringScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    GridView.count(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      crossAxisCount: 4,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 1.3,
+                    Column(
                       children: [
-                        for (int i = 0; i <= 6; i++)
-                          _buildRunButton(context, i, matchState, theme),
-                        _buildSpecialButton(
-                          context,
-                          'W',
-                          Colors.redAccent,
-                          () => matchState.addWicket(),
-                          theme,
+                        // First row: 0 and 1 (two larger buttons)
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(bottom: 12, right: 6),
+                                child: _buildRunButton(
+                                    context, 0, matchState, theme),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(bottom: 12, left: 6),
+                                child: _buildRunButton(
+                                    context, 1, matchState, theme),
+                              ),
+                            ),
+                          ],
                         ),
-                        _buildSpecialButton(
-                          context,
-                          'Wide',
-                          Colors.orangeAccent,
-                          () => _showWideDialog(context, matchState, theme),
-                          theme,
+
+                        // Second row: 2, 3, 4, 6
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(bottom: 12, right: 6),
+                                child: _buildRunButton(
+                                    context, 2, matchState, theme),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: 12, left: 6, right: 6),
+                                child: _buildRunButton(
+                                    context, 3, matchState, theme),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: 12, left: 6, right: 6),
+                                child: _buildRunButton(
+                                    context, 4, matchState, theme),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(bottom: 12, left: 6),
+                                child: _buildRunButton(
+                                    context, 6, matchState, theme),
+                              ),
+                            ),
+                          ],
                         ),
-                        _buildSpecialButton(
-                          context,
-                          'No Ball',
-                          Colors.purpleAccent,
-                          () => _showNoBallDialog(context, matchState, theme),
-                          theme,
-                          fontSize: 14,
+
+                        // Third row: 5, Wide, No Ball, Wicket
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: _buildRunButton(
+                                    context, 5, matchState, theme),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 6),
+                                child: _buildSpecialButton(
+                                  context,
+                                  'Wide',
+                                  Colors.orangeAccent,
+                                  () => _showWideDialog(
+                                      context, matchState, theme),
+                                  theme,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 6),
+                                child: _buildSpecialButton(
+                                  context,
+                                  'No Ball',
+                                  Colors.purpleAccent,
+                                  () => _showNoBallDialog(
+                                      context, matchState, theme),
+                                  theme,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 6),
+                                child: _buildSpecialButton(
+                                  context,
+                                  'Wicket',
+                                  Colors.redAccent,
+                                  () => matchState.addWicket(),
+                                  theme,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -247,13 +334,15 @@ class ScoringScreen extends StatelessWidget {
     );
   }
 
+  // Update the _buildRunButton method for larger buttons
   Widget _buildRunButton(
       BuildContext context, int runs, MatchState matchState, ThemeData theme) {
     return ElevatedButton(
       onPressed: () => matchState.addBallOutcome(runs),
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.zero,
-        elevation: 0,
+        elevation: 2, // Added slight elevation for better visual feedback
+        minimumSize: Size(0, 60), // Increased height for better touch targets
         backgroundColor: runs == 0
             ? Color(0xFF333333)
             : runs == 4 || runs == 6
@@ -266,7 +355,7 @@ class ScoringScreen extends StatelessWidget {
       child: Text(
         '$runs',
         style: TextStyle(
-          fontSize: 22,
+          fontSize: 26, // Increased font size
           fontWeight: FontWeight.bold,
           color: runs == 4 || runs == 6 ? Colors.white : Colors.grey[300],
         ),
@@ -274,6 +363,7 @@ class ScoringScreen extends StatelessWidget {
     );
   }
 
+  // Update the _buildSpecialButton method for larger special buttons
   Widget _buildSpecialButton(BuildContext context, String label, Color color,
       VoidCallback onPressed, ThemeData theme,
       {double fontSize = 18}) {
@@ -281,17 +371,19 @@ class ScoringScreen extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.zero,
-        elevation: 0,
+        elevation: 2, // Added slight elevation
+        minimumSize: Size(0, 60), // Increased height to match run buttons
         backgroundColor: color.withOpacity(0.2),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: color.withOpacity(0.5), width: 1),
+          side: BorderSide(
+              color: color.withOpacity(0.7), width: 1.5), // Thicker border
         ),
       ),
       child: Text(
         label,
         style: TextStyle(
-          fontSize: fontSize,
+          fontSize: fontSize + 2, // Increased font size
           fontWeight: FontWeight.bold,
           color: color,
         ),

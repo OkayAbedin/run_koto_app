@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/match_state.dart';
+import '../widgets/app_drawer.dart';
 import 'toss_screen.dart';
 
 class MatchSetupScreen extends StatefulWidget {
@@ -13,8 +14,27 @@ class MatchSetupScreen extends StatefulWidget {
 class _MatchSetupScreenState extends State<MatchSetupScreen> {
   final _team1Controller = TextEditingController();
   final _team2Controller = TextEditingController();
-  final _oversController = TextEditingController(text: '20');
+  late final TextEditingController _oversController;
   int _selectedPlayers = 11;
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with a temporary value - we'll update it in didChangeDependencies
+    _oversController = TextEditingController(text: '20');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      final defaultOvers = Provider.of<MatchState>(context).defaultOvers;
+      // Update the controller text with the actual default overs
+      _oversController.text = defaultOvers.toString();
+      _initialized = true;
+    }
+  }
 
   @override
   void dispose() {
@@ -30,9 +50,10 @@ class _MatchSetupScreenState extends State<MatchSetupScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Match'),
+        title: const Text('Run Koto?'),
         centerTitle: true,
       ),
+      drawer: const AppDrawer(),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -49,7 +70,7 @@ class _MatchSetupScreenState extends State<MatchSetupScreen> {
           padding: const EdgeInsets.all(16.0),
           children: [
             Text(
-              'Setup Your Cricket Match',
+              'Setup A New Cricket Match',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
@@ -175,7 +196,8 @@ class _MatchSetupScreenState extends State<MatchSetupScreen> {
       ),
       bottomNavigationBar: SafeArea(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          padding: const EdgeInsets.symmetric(
+              horizontal: 16.0, vertical: 12.0), // Increased vertical padding
           decoration: BoxDecoration(
             color: Color(0xFF212121),
             borderRadius: BorderRadius.only(
@@ -222,9 +244,11 @@ class _MatchSetupScreenState extends State<MatchSetupScreen> {
               );
             },
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 20), // Increased padding
+              minimumSize: Size(double.infinity, 60), // Set minimum height
               textStyle: TextStyle(
-                fontSize: 16,
+                fontSize: 18, // Increased font size
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
               ),
@@ -233,8 +257,13 @@ class _MatchSetupScreenState extends State<MatchSetupScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('START MATCH'),
-                SizedBox(width: 8),
-                Icon(Icons.play_circle_filled),
+                SizedBox(width: 12), // Increased spacing
+                Icon(
+                  Icons.play_circle_filled,
+                  size: 28, // Increased icon size
+                  color: Colors
+                      .white, // Make icon explicitly white for better visibility
+                ),
               ],
             ),
           ),

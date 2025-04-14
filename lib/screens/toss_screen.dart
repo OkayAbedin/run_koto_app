@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/match_state.dart';
+import '../widgets/app_drawer.dart';
 import 'scoring_screen.dart';
 import 'dart:math';
 
@@ -45,6 +46,7 @@ class _TossScreenState extends State<TossScreen> {
             title: const Text('Toss'),
             centerTitle: true,
           ),
+          drawer: const AppDrawer(),
           body: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -133,18 +135,26 @@ class _TossScreenState extends State<TossScreen> {
                       ElevatedButton(
                         onPressed: () => performToss(matchState),
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 24, horizontal: 32),
+                          minimumSize: Size(double.infinity,
+                              60), // Full width with minimum height
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.flip),
-                            SizedBox(width: 8),
+                            Icon(
+                              Icons.circle,
+                              size: 28,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 12),
                             Text(
                               'TOSS COIN',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.2,
+                                fontSize: 18,
                               ),
                             ),
                           ],
@@ -208,13 +218,21 @@ class _TossScreenState extends State<TossScreen> {
                           ),
                         );
                       },
-                      icon: Icon(Icons.sports_cricket),
-                      label: Text('BAT FIRST'),
+                      icon: Icon(Icons.sports_cricket, size: 28, color: Colors.white,),
+                      label: Text(
+                        'BAT FIRST',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                        minimumSize: Size(double.infinity,
+                            60), // Full width with minimum height
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(
+                        height: 24), // Increased spacing between buttons
                     OutlinedButton.icon(
                       onPressed: () {
                         final fieldingTeam = tossWinner == matchState.team1Name
@@ -230,12 +248,19 @@ class _TossScreenState extends State<TossScreen> {
                           ),
                         );
                       },
-                      icon: Icon(Icons.sports_baseball),
-                      label: Text('FIELD FIRST'),
+                      icon: Icon(Icons.sports_baseball, size: 28),
+                      label: Text(
+                        'FIELD FIRST',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                       style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                        minimumSize: Size(double.infinity,
+                            60), // Full width with minimum height
                         foregroundColor: Colors.white,
-                        side: BorderSide(color: Colors.grey[600]!),
+                        side: BorderSide(color: Colors.grey[600]!, width: 2),
                       ),
                     ),
                   ],

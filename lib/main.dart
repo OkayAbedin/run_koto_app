@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'screens/splash_screen.dart';
 import 'screens/match_setup_screen.dart';
+import 'screens/about_screen.dart';
+import 'screens/settings_screen.dart';
 import 'models/match_state.dart';
 
 void main() {
@@ -15,7 +18,9 @@ class CricketTrackerApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MatchState(),
       child: MaterialApp(
-        title: 'Cricket Run Tracker',
+        debugShowCheckedModeBanner:
+            false, // Add this line to remove the debug banner
+        title: 'Run Koto?',
         theme: ThemeData(
           useMaterial3: true,
           brightness: Brightness.dark,
@@ -77,7 +82,13 @@ class CricketTrackerApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const MatchSetupScreen(),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const SplashScreen(),
+          '/home': (context) => const MatchSetupScreen(),
+          '/about': (context) => const AboutScreen(),
+          '/settings': (context) => const SettingsScreen(),
+        },
       ),
     );
   }
