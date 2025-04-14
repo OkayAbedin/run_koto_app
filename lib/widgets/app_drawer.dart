@@ -52,8 +52,8 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.home, color: Colors.white),
-            title: const Text('Home'),
+            leading: const Icon(Icons.sports_cricket, color: Colors.white),
+            title: const Text('New Match'),
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamedAndRemoveUntil(
