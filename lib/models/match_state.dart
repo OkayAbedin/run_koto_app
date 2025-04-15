@@ -50,7 +50,7 @@ class MatchState extends ChangeNotifier {
   // Constructor to initialize totalOvers with _defaultOvers
   MatchState() {
     totalOvers = _defaultOvers;
-    // Don't call _loadSettings here since we're exposing it as a public method now
+    _loadSettings(); // Load saved settings if available
   }
 
   void setDefaultOvers(int overs) {
@@ -59,11 +59,6 @@ class MatchState extends ChangeNotifier {
     notifyListeners();
     // If you're using shared preferences or another persistence method:
     _saveSettings();
-  }
-
-  // Public method to load settings (used in app initialization and after settings changes)
-  Future<void> loadSettings() async {
-    await _loadSettings();
   }
 
   // Add a method to save settings to persistent storage
@@ -414,5 +409,28 @@ class MatchState extends ChangeNotifier {
         notifyListeners();
       }
     }
+  }
+
+  // Reset all match data for a new match
+  void resetMatch() {
+    team1Name = '';
+    team2Name = '';
+    currentInnings = 1;
+    totalOvers = _defaultOvers;
+    currentOver = 0;
+    currentBall = 0;
+    runs = 0;
+    wickets = 0;
+    extras = 0;
+    firstInningsScore = [];
+    secondInningsScore = [];
+    firstInningsBallHistory = [];
+    secondInningsBallHistory = [];
+    firstInningsDeliveries = 0;
+    secondInningsDeliveries = 0;
+    isMatchComplete = false;
+    tossWinner = null;
+    battingFirst = null;
+    notifyListeners();
   }
 }

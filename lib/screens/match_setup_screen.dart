@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/match_state.dart';
 import '../widgets/app_drawer.dart';
 import 'toss_screen.dart';
@@ -12,8 +11,7 @@ class MatchSetupScreen extends StatefulWidget {
   State<MatchSetupScreen> createState() => _MatchSetupScreenState();
 }
 
-class _MatchSetupScreenState extends State<MatchSetupScreen>
-    with WidgetsBindingObserver {
+class _MatchSetupScreenState extends State<MatchSetupScreen> {
   final _team1Controller = TextEditingController();
   final _team2Controller = TextEditingController();
   late final TextEditingController _oversController;
@@ -25,12 +23,6 @@ class _MatchSetupScreenState extends State<MatchSetupScreen>
     super.initState();
     // Initialize with a temporary value - we'll update it in didChangeDependencies
     _oversController = TextEditingController(text: '20');
-
-    // Register this widget to listen for app lifecycle changes
-    WidgetsBinding.instance.addObserver(this);
-
-    // Refresh settings when widget initializes
-    _refreshSettings();
   }
 
   @override
@@ -45,55 +37,16 @@ class _MatchSetupScreenState extends State<MatchSetupScreen>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // When the app resumes from background, refresh settings
-    if (state == AppLifecycleState.resumed) {
-      _refreshSettings();
-    }
-  }
-
-  Future<void> _refreshSettings() async {
-    // Reload settings from storage and update the UI
-    final matchState = Provider.of<MatchState>(context, listen: false);
-    await matchState.loadSettings();
-
-    // Only update the text field if it hasn't been manually changed by the user
-    if (_initialized &&
-        _oversController.text == matchState.totalOvers.toString()) {
-      setState(() {
-        _oversController.text = matchState.defaultOvers.toString();
-      });
-    }
-  }
-
-  @override
   void dispose() {
     _team1Controller.dispose();
     _team2Controller.dispose();
     _oversController.dispose();
-    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    // Check if we're coming back to this screen and refresh settings if needed
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final prefs = await SharedPreferences.getInstance();
-      final isAppJustStarted = prefs.getBool('is_fresh_app_start') ?? false;
-
-      // If this is not a fresh app start, refresh settings
-      if (!isAppJustStarted) {
-        _refreshSettings();
-      }
-
-      // Reset the flag after first build
-      if (isAppJustStarted) {
-        await prefs.setBool('is_fresh_app_start', false);
-      }
-    });
 
     return Scaffold(
       appBar: AppBar(
@@ -278,6 +231,10 @@ class _MatchSetupScreenState extends State<MatchSetupScreen>
               }
 
               final matchState = context.read<MatchState>();
+
+              // Reset any previous match data
+              matchState.resetMatch();
+
               matchState.setTeamNames(
                 _team1Controller.text,
                 _team2Controller.text,

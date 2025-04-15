@@ -627,7 +627,7 @@ class ScoringScreen extends StatelessWidget {
                     ),
                   );
                 },
-                icon: Icon(Icons.add_circle),
+                icon: Icon(Icons.add_circle, color: Colors.white,),
                 label: Text('START NEW MATCH'),
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
