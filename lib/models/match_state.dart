@@ -50,7 +50,7 @@ class MatchState extends ChangeNotifier {
   // Constructor to initialize totalOvers with _defaultOvers
   MatchState() {
     totalOvers = _defaultOvers;
-    _loadSettings(); // Load saved settings if available
+    // Don't call _loadSettings here since we're exposing it as a public method now
   }
 
   void setDefaultOvers(int overs) {
@@ -59,6 +59,11 @@ class MatchState extends ChangeNotifier {
     notifyListeners();
     // If you're using shared preferences or another persistence method:
     _saveSettings();
+  }
+
+  // Public method to load settings (used in app initialization and after settings changes)
+  Future<void> loadSettings() async {
+    await _loadSettings();
   }
 
   // Add a method to save settings to persistent storage
