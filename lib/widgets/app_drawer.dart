@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../screens/about_screen.dart';
 import '../screens/settings_screen.dart';
 
@@ -90,23 +92,20 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.feedback_outlined, color: Colors.white),
             title: const Text('Feedback'),
-            onTap: () {
+            onTap: () async {
               Navigator.pop(context);
-              // Show feedback dialog
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Feedback'),
-                  content: const Text(
-                      'Feedback functionality will be available in a future update.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('CLOSE'),
-                    ),
-                  ],
-                ),
-              );
+              // Open GitHub repository for feedback
+              final Uri url =
+                  Uri.parse('https://github.com/OkayAbedin/run_koto_app');
+              try {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Could not open URL: $e')),
+                  );
+                }
+              }
             },
           ),
           const SizedBox(height: 50),

@@ -854,17 +854,6 @@ class ScoringScreen extends StatelessWidget {
     );
   }
 
-  Widget _dialogButton(BuildContext context, String text,
-      VoidCallback onPressed, ThemeData theme) {
-    return TextButton(
-      onPressed: onPressed,
-      style: TextButton.styleFrom(
-        foregroundColor: theme.colorScheme.primary,
-        textStyle: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      child: Text(text),
-    );
-  }
 
   String _getBallTypeText(BallHistory ball) {
     if (ball.isWide) return 'Wide Ball';
