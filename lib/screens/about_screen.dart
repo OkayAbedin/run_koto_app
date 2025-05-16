@@ -101,7 +101,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Pritom Saha, Riyadul Islam, Sahabi Mukul, Aninda Das, and Moin Hasan',
+                      'Minhazul Abedin',
                       style: theme.textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 16),
