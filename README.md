@@ -90,5 +90,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 <p align="center">
-  Made with ❤️ by [Minhaz](https://bio.link/minhazabedin)
+  Made with ❤️ by Minhaz
 </p>
